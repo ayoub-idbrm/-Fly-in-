@@ -2,6 +2,10 @@ from src.parser import Parsing
 import re
 import sys
 
+class ParsingError(Exception):
+    """raise an error in with catch it in the parsing"""
+    pass
+
 
 class Hub:
     def __init__(self, name, x, y, hub_type, zone="normal", color="none", max_drones=1):
@@ -13,7 +17,9 @@ class Hub:
         self.color = color
         self.max_drones = max_drones
         self.neighbors = []
-
+        self.cost = 1
+        if zone == "restricted":
+            self.cost = 2
 
 class Connection:
     def __init__(self, hub1, hub2, max_link_capacity=1):
@@ -110,34 +116,83 @@ class Loading(Parsing):
 
         lines = self.read_file(path)
 
+        """loop for each line in the file and parse it"""
         for line in lines:
             if line.startswith("nb_drones:"):
                 self.nb_drones = self.parse_nb_drones(line)
 
             elif line.startswith("start_hub:"):
                 hub = self.parse_hub(line)
+
+                if hub.name in self.hubs:
+                    raise ParsingError(f"Duplicate hub: {hub.name}")
+
                 self.hubs[hub.name] = hub
                 self.start_hub = hub
 
             elif line.startswith("end_hub:"):
                 hub = self.parse_hub(line)
+
+                if hub.name in self.hubs:
+                    raise ParsingError(f"Duplicate hub: {hub.name}")
+
                 self.hubs[hub.name] = hub
                 self.end_hub = hub
 
             elif line.startswith("hub:"):
                 hub = self.parse_hub(line)
+
+                if hub.name in self.hubs:
+                    raise ParsingError(f"Duplicate hub: {hub.name}")
                 self.hubs[hub.name] = hub
 
             elif line.startswith("connection:"):
                 connection = self.parse_connection(line)
                 self.connections.append(connection)
-        for connect in self.connections:
-            hub.neighbors
-        
 
-path = "maps/challenger/01_the_impossible_dream.txt"
-loader = Loading()
-loader.processing(path)
-print(loader.connections[0].hub1)
-print(loader.connections[0].hub2)
-print(loader.connections[0].max_link_capacity)
+        """validate the parsing is it everything good before building the graph"""
+
+        self.validate()
+
+        """transforming the parsed to data into a graph"""
+
+        for connect in self.connections:
+            hub1 = self.hubs[connect.hub1]
+            hub2 = self.hubs[connect.hub2]
+
+            hub1.neighbors.append((hub2, connect.max_link_capacity))
+            hub2.neighbors.append((hub1, connect.max_link_capacity))
+
+
+
+    def validate(self):
+        duplicate_connection = set()
+
+        if self.nb_drones <= 0:
+            raise ParsingError("ERROR: the number of the drones should be positive")
+
+        if self.start_hub is None:
+            raise ParsingError("ERROR: No start hub found")
+
+        if self.end_hub is None:
+            raise ParsingError("ERROR: No end hub found")
+
+        for connection in self.connections:
+            if connection.hub1 not in self.hubs or connection.hub2 not in self.hubs:
+                raise ParsingError(f"Unknown hub in connection: {connection.hub1}-{connection.hub2}")
+
+            key = tuple(sorted([connection.hub1, connection.hub2]))
+            if key in duplicate_connection:
+                raise ParsingError(f"ERROR: there's a duplicate connection {key}")
+            
+            duplicate_connection.add(key)
+
+
+
+
+
+# path = "maps/challenger/01_the_impossible_dream.txt"
+# loader = Loading()
+# loader.processing(path)
+# for hub in loader.hubs.values():
+#     print(hub.name, hub.zone, hub.cost)

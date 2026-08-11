@@ -15,7 +15,11 @@ class Parsing():
         data = []
         try:
             with open(path) as file:
-                for line in file:
+                content = file.read()
+                if not content:
+                    print("ERROR: the file is empty ")
+                    sys.exit()
+                for line in content.splitlines():
                     line = line.strip()
                     if not line or line.startswith("#"):
                         continue
@@ -24,7 +28,12 @@ class Parsing():
         except OSError as e:
             raise ParsingError(f"failed to open '{path}: {e}")
 
+        if not data:
+            print("ERROR: the file content only comment and blank no data")
+            sys.exit(1)
         return data
 
-
+path = "maps/challenger/01_the_impossible_dream.txt"
+test = Parsing()
+print(test.read_file(path))
 

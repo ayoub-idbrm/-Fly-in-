@@ -1,13 +1,6 @@
 File-level
-Empty file → fail
-File that only contains comments and blank lines → fail
-File that can't be opened (wrong path, permissions) → fail
-First real line is not nb_drones: → fail
-nb_drones: has wrong number of tokens (e.g. nb_drones: 5 extra) → fail
-nb_drones value is not a valid integer → fail
-nb_drones value is zero or negative → fail
-nb_drones exceeds 10,000 → fail
-Comments at the start of a line → ignored
+
+
 Comments mid-line (hub: z 0 0 # comment) → stripped correctly
 Blank lines anywhere in the file → skipped
 Zone / hub lines

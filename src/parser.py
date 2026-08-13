@@ -54,10 +54,10 @@ class Parsing():
 
         return data
 
-try: 
-    path = "maps/challenger/01_the_impossible_dream.txt"
-    test = Parsing()
-    print(test.read_file(path))
-except ParsingError as e:
-    print(e)
+# try: 
+#     path = "maps/challenger/01_the_impossible_dream.txt"
+#     test = Parsing()
+#     print(test.read_file(path))
+# except ParsingError as e:
+#     print(e)
 

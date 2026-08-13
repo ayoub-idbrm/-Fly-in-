@@ -1,3 +1,5 @@
+from src.loading import Hub
+import heapq
 
 
 class Dijkstra:
@@ -5,6 +7,7 @@ class Dijkstra:
         self.loader = loader
         self.distance = {}
         self.previous = {}
+        self.visited = set()
 
 
     def initialize(self):
@@ -31,17 +34,98 @@ class Dijkstra:
         return next_hub
 
 
+    def relax_neighbors(self, current):
+        
+        for neighbor , capacity in current.neighbors:
+
+            new_distance = self.distance[current.name] + 1
+
+            if new_distance < self.distance[neighbor.name]:
+                self.distance[neighbor.name] = new_distance
+                self.previous[neighbor.name] = current
+
+
+    def mark_visited(self, current):
+        self.visited.add(current.name)
+
+
+    def run(self):
+        while True:
+            current = self.get_next_hub(self.visited)
+
+            if current is None:
+                break
+            
+            current = self.loader.hubs[current]
+
+            self.relax_neighbors(current)
+
+            self.mark_visited(current)
+
+            if current == self.loader.end_hub:
+                break
+        
+        return self.get_path()
+
+
+
+    def get_path(self):
+        path = []
+        current = self.loader.end_hub
+        path.append(current)
+        dis = 0
+
+        while True:
+            current = self.previous[current.name]
+
+            if current == None:
+                break
+            dis = dis + self.distance[current.name]
+            path.append(current)
+        path.reverse()
+        return path
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 from src.loading import Loading
 from src.algorithm import Dijkstra
 
-path = "maps/challenger/01_the_impossible_dream.txt"
+path = "/home/aidbrm/Desktop/fly/maps/medium/03_priority_puzzle.txt"
 
-loader = Loading()
-loader.processing(path)
+if __name__ == "__main__":
+    loader = Loading()
+    loader.processing(path)
 
-dijkstra = Dijkstra(loader)
-dijkstra.initialize()
+    dijkstra = Dijkstra(loader)
+    dijkstra.initialize()
 
-print(dijkstra.distance)
-print(dijkstra.previous)
+    path = dijkstra.run()
+
+    for hub in path:
+        print(hub.name)
+    print("Dijkstra distance:", dijkstra.distance[loader.end_hub.name])

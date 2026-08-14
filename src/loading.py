@@ -164,6 +164,14 @@ class Loading(Parsing):
             hub2.neighbors.append((hub1, connect.max_link_capacity))
 
 
+    def get_connection(self, hub1, hub2):
+        for connection in self.connections:
+            if ((connection.hub1 == hub1.name and connection.hub2 == hub2.name) or
+                (connection.hub1 == hub2.name and connection.hub2 == hub1.name)):
+                return connection
+
+        return None
+
 
     def validate(self):
         duplicate_connection = set()

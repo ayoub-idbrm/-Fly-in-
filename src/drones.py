@@ -35,38 +35,11 @@ class Drone():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 from src.loading import Loading
 from src.algorithm import Dijkstra
 
 
-path = "/home/aidbrm/Desktop/fly/maps/challenger/01_the_impossible_dream.txt"
+path = "maps/challenger/01_the_impossible_dream.txt"
 
 if __name__ == "__main__":
     drones = []
@@ -83,14 +56,20 @@ if __name__ == "__main__":
 
 
 
-    for i in range(loader.nb_drones):
-        drone = Drone(i + 1, loader.start_hub, path)
-        drones.append(drone)
+    # for i in range(loader.nb_drones):
+    #     drone = Drone(i + 1, loader.start_hub, path)
+    #     drones.append(drone)
 
-    for turn in range(1, len(path)):
-        print(f"Turn {turn}")
+    # for turn in range(1, len(path)):
+    #     print(f"Turn {turn}")
 
-        for drone in drones:
-            drone.move_drone()
-            print(f"Drone {drone.drone_id} -> {drone.position.name}")
+    #     for drone in drones:
+    #         drone.move_drone()
+    #         print(f"Drone {drone.drone_id} -> {drone.position.name}")
 
+    current = loader.start_hub
+    next_hub = path[1]
+
+    connection = loader.get_connection(current, next_hub)
+
+    print(connection.max_link_capacity)

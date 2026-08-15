@@ -195,13 +195,3 @@ class Loading(Parsing):
             
             duplicate_connection.add(key)
 
-
-
-
-
-# path = "maps/challenger/01_the_impossible_dream.txt"
-# loader = Loading()
-# loader.processing(path)
-# for hub in loader.hubs.values():
-#     print(hub.name, hub.zone, hub.cost)
-    

@@ -6,6 +6,11 @@ class Drone():
         self.position = position
         self.path = path
 
+        self.in_flight = False
+        self.destination = None
+        self.turns = 0
+
+
 
     def move_drone(self):
         current = self.path.index(self.position)
@@ -14,6 +19,19 @@ class Drone():
             self.position = self.path[current + 1]
 
 
+    def flight(self, destination):
+        self.in_flight = True
+        self.destination = destination
+        self.turns = 1
+
+
+    def finish_flight(self):
+        self.turns -= 1
+
+        if self.turns == 0:
+            self.in_flight = False
+            self.position = self.destination
+            self.destination = None
 
 
 
@@ -31,45 +49,41 @@ class Drone():
 
 
 
+# from src.loading import Loading
+# from src.algorithm import Dijkstra
+
+
+# path = "maps/challenger/01_the_impossible_dream.txt"
+
+# if __name__ == "__main__":
+#     drones = []
+
+#     loader = Loading()
+#     loader.processing(path)
+
+#     dj = Dijkstra(loader)
+#     dj.initialize()
+#     dj.run()
+#     path = dj.get_path()
+
+#     test = Drone(1, loader.start_hub, path)
 
 
 
+#     # for i in range(loader.nb_drones):
+#     #     drone = Drone(i + 1, loader.start_hub, path)
+#     #     drones.append(drone)
 
-from src.loading import Loading
-from src.algorithm import Dijkstra
+#     # for turn in range(1, len(path)):
+#     #     print(f"Turn {turn}")
 
+#     #     for drone in drones:
+#     #         drone.move_drone()
+#     #         print(f"Drone {drone.drone_id} -> {drone.position.name}")
 
-path = "maps/challenger/01_the_impossible_dream.txt"
+#     current = loader.start_hub
+#     next_hub = path[1]
 
-if __name__ == "__main__":
-    drones = []
+#     connection = loader.get_connection(current, next_hub)
 
-    loader = Loading()
-    loader.processing(path)
-
-    dj = Dijkstra(loader)
-    dj.initialize()
-    dj.run()
-    path = dj.get_path()
-
-    test = Drone(1, loader.start_hub, path)
-
-
-
-    # for i in range(loader.nb_drones):
-    #     drone = Drone(i + 1, loader.start_hub, path)
-    #     drones.append(drone)
-
-    # for turn in range(1, len(path)):
-    #     print(f"Turn {turn}")
-
-    #     for drone in drones:
-    #         drone.move_drone()
-    #         print(f"Drone {drone.drone_id} -> {drone.position.name}")
-
-    current = loader.start_hub
-    next_hub = path[1]
-
-    connection = loader.get_connection(current, next_hub)
-
-    print(connection.max_link_capacity)
+#     print(connection.max_link_capacity)

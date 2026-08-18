@@ -3,7 +3,7 @@ from src.algorithm import Dijkstra
 from src.drones import Drone
 
 
-file = "/home/aidbrm/Desktop/fly/maps/hard/03_ultimate_challenge.txt"
+file = "/home/aidbrm/Desktop/fly/maps/medium/03_priority_puzzle.txt+"
 
 
 def all_finished(drones, end):
@@ -19,18 +19,59 @@ def main():
     loader.processing(file)
 
     dijkstra = Dijkstra(loader)
-    dijkstra.initialize()
-    dijkstra.run()
 
-    path = dijkstra.get_path()
+    paths = []
 
+    for i in range(3):
+        dijkstra.initialize()
+        dijkstra.run()
+
+        path = dijkstra.get_path()
+    
+        if len(path) <= 1 or path[0] != loader.start_hub:
+            break
+        
+        already_exists = False
+
+
+        for old in paths:
+            if dijkstra.same_path(path, old):
+                already_exists = True
+                break
+        
+        if already_exists:
+            break
+
+        paths.append(path)
+
+        dijkstra.penalize_path(path)
+
+    for i, path in enumerate(paths):
+        print(f"Path {i + 1}")
+
+        for hub in path:
+            print(hub.name, end=" -> ")
+
+        print()
     drones = []
 
+    if not paths:
+        print("No valid path found")
+        return
+    
     for i in range(loader.nb_drones):
+        path = paths[i % len(paths)]
+
         drone = Drone(i + 1, loader.start_hub, path)
+
         drones.append(drone)
 
+    reserved = {}
     turn = 0
+
+    for hub in loader.hubs.values():
+        reserved[hub.name] = 0
+
 
     while not all_finished(drones, loader.end_hub):
         turn += 1
@@ -63,6 +104,7 @@ def main():
                 drone.finish_flight()
 
                 if not drone.in_flight:
+                    reserved[destination.name] -= 1
                     hub_occ[destination.name] += 1
 
                     movements.append(
@@ -99,7 +141,7 @@ def main():
             # -------------------------
             if next_hub.zone == "restricted":
 
-                if (used < connection.max_link_capacity and hub_occ[next_hub.name] < next_hub.max_drones):
+                if (used < connection.max_link_capacity and hub_occ[next_hub.name] + reserved[next_hub.name] < next_hub.max_drones):
                     drone.flight(next_hub)
 
                     used_connections[key] = used + 1

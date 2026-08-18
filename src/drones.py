@@ -22,7 +22,7 @@ class Drone():
     def flight(self, destination):
         self.in_flight = True
         self.destination = destination
-        self.turns = 1
+        self.turns = 2
 
 
     def finish_flight(self):

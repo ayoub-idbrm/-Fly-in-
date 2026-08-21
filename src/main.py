@@ -3,7 +3,7 @@ from src.algorithm import Dijkstra
 from src.drones import Drone
 
 
-file = "/home/aidbrm/Desktop/fly/maps/medium/03_priority_puzzle.txt+"
+file = "/home/aidbrm/Desktop/fly/maps/challenger/01_the_impossible_dream.txt"
 
 
 def all_finished(drones, end):
@@ -178,6 +178,7 @@ def main():
         # -----------------------------
         if movements:
             print(" ".join(movements))
+            print(f"Total turns: {turn}")
 
 
 if __name__ == "__main__":

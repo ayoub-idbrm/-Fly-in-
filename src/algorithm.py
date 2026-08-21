@@ -131,7 +131,7 @@ class Dijkstra:
 
             key = self.get_edge_key(hub1, hub2)
 
-            self.add_cost[key] = self.add_cost.get(key, 0) + 10
+            self.add_cost[key] = self.add_cost.get(key, 0) + 0.01
 
 
     def same_path(self, path1, path2):

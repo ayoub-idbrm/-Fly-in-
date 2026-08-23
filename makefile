@@ -1,46 +1,23 @@
-INSTALL := uv
-PYTHON := python3
+.PHONY: install run debug clean lint
 
-FLAKE8 := flake8
-MYPY := mypy
-
-SRC := src
-
-.PHONY: help install run debug test lint lint-strict clean
-
-help:
-	@echo "Available commands:"
-	@echo "  make install"
-	@echo "  make run"
-	@echo "  make debug"
-	@echo "  make test"
-	@echo "  make lint"
-	@echo "  make lint-strict"
-	@echo "  make clean"
+PYTHON = uv run python
+MAIN = src
 
 install:
-	$(INSTALL) sync
+	uv sync
 
 run:
-	$(PYTHON) -m src.main
+	$(PYTHON) $(MAIN)
 
 debug:
-	$(PYTHON) -m pdb -m src.main
-
-test:
-	$(PYTHON) -m pytest
-
-lint:
-	$(FLAKE8) $(SRC)
-	$(MYPY) $(SRC)
-
-lint-strict:
-	$(FLAKE8) $(SRC)
-	$(MYPY) --strict $(SRC)
+	$(PYTHON) -m pdb $(MAIN)
 
 clean:
-	find . -type d \( \
-		-name "__pycache__" -o \
-		-name ".mypy_cache" -o \
-		-name ".pytest_cache" \
-	\) -exec rm -rf {} \;
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type d -name ".mypy_cache" -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
+	rm -rf .mypy_cache src/.mypy_cache .pytest_cache .ruff_cache /tmp/.mypy_cache
+
+lint:
+	uv run flake8 src
+	PYTHONPATH=src uv run mypy src --cache-dir=/tmp/.mypy_cache --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
